@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Translation App</h1>
+        <form id="translation-form">
+            <label for="text">Enter Text to Translate</label>
+            <textarea id="text" rows="4" placeholder="Type text here..."></textarea>
+            <button type="submit">Translate</button>
+        </form>
+        <div id="result">
+            <h2>Translated Text:</h2>
+            <p id="translated-text"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('translation-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const text = document.getElementById('text').value;
+            
+            if (!text.trim()) {
+                alert("Please enter some text.");
+                return;
+            }
+
+            const response = await fetch('/translate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            const data = await response.json();
+
+            if (data.translation) {
+                document.getElementById('translated-text').innerText = data.translation;
+            } else {
+                document.getElementById('translated-text').innerText = 'Error: ' + (data.error || 'Something went wrong');
+            }
+        });
+    </script>
+</body>
+</html>
